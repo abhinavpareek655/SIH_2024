@@ -2,7 +2,7 @@
 
 Welcome to SIH_2024!
 
-I'm excited you want to contribute! Before jumping in, check out our rules to keep things smooth and enjoyable. Let’s make this project awesome together!
+I'm excited you want to contribute! Before jumping in, check out the rules to keep things smooth and enjoyable. Let’s make this project awesome together!
 
 ## Contribution Guidelines
 
