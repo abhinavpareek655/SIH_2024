@@ -44,18 +44,41 @@ def scrape_load_data(date):
 
 
 def get_weather_data(date):
-    # This is a placeholder. Replace with actual API call.
+    # Placeholder: Replace with actual API call.
     return {'temperature': 25, 'humidity': 60}
+
+
+def is_holiday(date):
+    # Placeholder logic for holidays. Return 1 for holidays, 0 for non-holidays.
+    # You can replace this with a more accurate holiday check.
+    return 1 if date.weekday() == 6 else 0  # Example: Sunday is a holiday
+
+
+def is_public_event(date):
+    # Placeholder logic for public events. Return 1 for public events, 0 for none.
+    # Replace this with actual logic if required.
+    return 1 if date == datetime(2024, 12, 21).date() else 0  # Example: Event on Dec 21, 2024
+
+
+def get_real_estate_growth(date):
+    # Placeholder for real estate growth rate. Replace with dynamic data if available.
+    return 2.5  # Example static growth rate
 
 
 def main():
     end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=365)
+    start_date = end_date - timedelta(days=5)
 
     all_data = {
-        'TIMESLOT': ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00',
-                     '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00',
-                     '22:00', '23:00']
+        'Date': [],
+        'Time': [],
+        'Temperature (°C)': [],
+        'Humidity (%)': [],
+        'Holiday (0/1)': [],
+        'Day of the Week (1-7)': [],
+        'Load Demand (MW)': [],
+        'Real Estate Development (Growth Rate %)': [],
+        'Public Event (0/1)': []
     }
 
     current_date = start_date
@@ -73,11 +96,23 @@ def main():
         # Get weather data
         weather = get_weather_data(current_date)
 
-        # Add data to all_data dictionary
-        date_str = current_date.strftime('%d/%m/%Y')
-        all_data[f"{date_str}(load)"] = [load_data.get(time, '') for time in all_data['TIMESLOT']]
-        all_data[f"{date_str}(temperature)"] = [weather['temperature']] * 24
-        all_data[f"{date_str}(humidity)"] = [weather['humidity']] * 24
+        # Get additional data
+        holiday = is_holiday(current_date)
+        public_event = is_public_event(current_date)
+        real_estate_growth = get_real_estate_growth(current_date)
+        day_of_week = current_date.weekday() + 1  # Convert to 1-7 (Monday=1, Sunday=7)
+
+        # Add data for each time slot
+        for time_slot, load in load_data.items():
+            all_data['Date'].append(current_date.strftime('%d/%m/%Y'))
+            all_data['Time'].append(time_slot)
+            all_data['Temperature (°C)'].append(weather['temperature'])
+            all_data['Humidity (%)'].append(weather['humidity'])
+            all_data['Holiday (0/1)'].append(holiday)
+            all_data['Day of the Week (1-7)'].append(day_of_week)
+            all_data['Load Demand (MW)'].append(load)
+            all_data['Real Estate Development (Growth Rate %)'].append(real_estate_growth)
+            all_data['Public Event (0/1)'].append(public_event)
 
         current_date += timedelta(days=1)
         time.sleep(1)  # Add a delay to avoid overwhelming the server
