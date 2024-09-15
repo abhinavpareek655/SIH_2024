@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime, timedelta
 import time
+import holidays
 
 
 def scrape_load_data(date):
@@ -42,22 +43,33 @@ def scrape_load_data(date):
 
     return data
 
-
+weather_dataframe = pd.read_csv('3800613.csv')
 def get_weather_data(date):
-    # Placeholder: Replace with actual API call.
-    return {'temperature': 25, 'humidity': 60}
+    year = date.strftime('%y')
+    month = date.strftime('%m')
+    day = date.strftime('%d')
+    date_str = '20'+year+'-'+month+'-'+day
+    print(date_str)
+    temp_df = weather_dataframe[weather_dataframe['DATE']==date_str][['PRCP','TAVG']]
+    return {'t': temp_df.iloc[0]['TAVG'],'p':temp_df.iloc[0]['PRCP']}
 
 
+India_holidays_list = set()
+for p,s in holidays.India(years = [2021,2022,2023,2024]).items():
+    India_holidays_list.add(p)
 def is_holiday(date):
-    # Placeholder logic for holidays. Return 1 for holidays, 0 for non-holidays.
-    # You can replace this with a more accurate holiday check.
-    return 1 if date.weekday() == 6 else 0  # Example: Sunday is a holiday
+    # Return 1 for holidays, 0 for non-holidays.
+    # A holiday is either a sunday or one of the dates in the India_holidays_list
+    if date.weekday() == 6 or date.date() in India_holidays_list :
+        return 1
+    return 0
+    
 
 
-def is_public_event(date):
-    # Placeholder logic for public events. Return 1 for public events, 0 for none.
-    # Replace this with actual logic if required.
-    return 1 if date == datetime(2024, 12, 21).date() else 0  # Example: Event on Dec 21, 2024
+# def is_public_event(date):
+#     # Placeholder logic for public events. Return 1 for public events, 0 for none.
+#     # Replace this with actual logic if required.
+#     return 1 if date == datetime(2024, 12, 21).date() else 0  # Example: Event on Dec 21, 2024
 
 
 def get_real_estate_growth(date):
@@ -66,19 +78,22 @@ def get_real_estate_growth(date):
 
 
 def main():
-    end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=5)
+    #End date is kept as 8 September 2024 because we only have data till that date only
+    end_date = datetime(2024,9,8)
+    start_date = end_date - timedelta(days=1)
+
+    
 
     all_data = {
         'Date': [],
         'Time': [],
         'Temperature (°C)': [],
-        'Humidity (%)': [],
+        'Precipitation (%)': [],
         'Holiday (0/1)': [],
         'Day of the Week (1-7)': [],
         'Load Demand (MW)': [],
         'Real Estate Development (Growth Rate %)': [],
-        'Public Event (0/1)': []
+        # 'Public Event (0/1)': []
     }
 
     current_date = start_date
@@ -90,7 +105,7 @@ def main():
 
         if not load_data:
             print(f"No data found for {current_date}. Skipping...")
-            current_date += timedelta(days=1)
+            current_date += timedelta(days=4)
             continue
 
         # Get weather data
@@ -98,7 +113,7 @@ def main():
 
         # Get additional data
         holiday = is_holiday(current_date)
-        public_event = is_public_event(current_date)
+        # public_event = is_public_event(current_date)
         real_estate_growth = get_real_estate_growth(current_date)
         day_of_week = current_date.weekday() + 1  # Convert to 1-7 (Monday=1, Sunday=7)
 
@@ -106,13 +121,13 @@ def main():
         for time_slot, load in load_data.items():
             all_data['Date'].append(current_date.strftime('%d/%m/%Y'))
             all_data['Time'].append(time_slot)
-            all_data['Temperature (°C)'].append(weather['temperature'])
-            all_data['Humidity (%)'].append(weather['humidity'])
+            all_data['Temperature (°C)'].append(weather['t'])
+            all_data['Precipitation (%)'].append(weather['p'])
             all_data['Holiday (0/1)'].append(holiday)
             all_data['Day of the Week (1-7)'].append(day_of_week)
             all_data['Load Demand (MW)'].append(load)
             all_data['Real Estate Development (Growth Rate %)'].append(real_estate_growth)
-            all_data['Public Event (0/1)'].append(public_event)
+            # all_data['Public Event (0/1)'].append(public_event)
 
         current_date += timedelta(days=1)
         time.sleep(1)  # Add a delay to avoid overwhelming the server
