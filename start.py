@@ -72,9 +72,9 @@ def is_holiday(date):
 #     return 1 if date == datetime(2024, 12, 21).date() else 0  # Example: Event on Dec 21, 2024
 
 
-def get_real_estate_growth(date):
-    # Placeholder for real estate growth rate. Replace with dynamic data if available.
-    return 2.5  # Example static growth rate
+# def get_real_estate_growth(date):
+#     # Placeholder for real estate growth rate. Replace with dynamic data if available.
+#     return 2.5  # Example static growth rate
 
 
 def main():
@@ -92,7 +92,7 @@ def main():
         'Holiday (0/1)': [],
         'Day of the Week (1-7)': [],
         'Load Demand (MW)': [],
-        'Real Estate Development (Growth Rate %)': [],
+        # 'Real Estate Development (Growth Rate %)': [],
         # 'Public Event (0/1)': []
     }
 
@@ -114,7 +114,7 @@ def main():
         # Get additional data
         holiday = is_holiday(current_date)
         # public_event = is_public_event(current_date)
-        real_estate_growth = get_real_estate_growth(current_date)
+        # real_estate_growth = get_real_estate_growth(current_date)
         day_of_week = current_date.weekday() + 1  # Convert to 1-7 (Monday=1, Sunday=7)
 
         # Add data for each time slot
@@ -126,7 +126,7 @@ def main():
             all_data['Holiday (0/1)'].append(holiday)
             all_data['Day of the Week (1-7)'].append(day_of_week)
             all_data['Load Demand (MW)'].append(load)
-            all_data['Real Estate Development (Growth Rate %)'].append(real_estate_growth)
+            # all_data['Real Estate Development (Growth Rate %)'].append(real_estate_growth)
             # all_data['Public Event (0/1)'].append(public_event)
 
         current_date += timedelta(days=1)
