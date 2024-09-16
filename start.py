@@ -51,6 +51,9 @@ def get_weather_data(date):
     date_str = '20'+year+'-'+month+'-'+day
     print(date_str)
     temp_df = weather_dataframe[weather_dataframe['DATE']==date_str][['PRCP','TAVG']]
+    if temp_df.empty:
+        print(f"No weather data found for date {date_str}")
+        return None
     return {'t': temp_df.iloc[0]['TAVG'],'p':temp_df.iloc[0]['PRCP']}
 
 
@@ -80,7 +83,7 @@ def is_holiday(date):
 def main():
     #End date is kept as 8 September 2024 because we only have data till that date only
     end_date = datetime(2024,9,8)
-    start_date = end_date - timedelta(days=1)
+    start_date = end_date - timedelta(days=358)
 
     
 
@@ -105,7 +108,7 @@ def main():
 
         if not load_data:
             print(f"No data found for {current_date}. Skipping...")
-            current_date += timedelta(days=4)
+            current_date += timedelta(days=1)
             continue
 
         # Get weather data
